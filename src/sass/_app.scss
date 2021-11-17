@@ -25,11 +25,14 @@
         top: 8px;
       }
     &:hover {
-      background-color: $c-blue;
       cursor: pointer;
+    }
+    label {
+      margin-left: 10px;
     }
   }
   .active {
-    background-color: $c-blue;
+  
+
   }
 }

@@ -1,45 +1,59 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from '../context/AppContext';
-import Children from "./children";
+
 
 export default function Tree() {
   const {
-    data,
-    setListChildren,
-    setIdPai,
-    idPai
+    data
   } = useContext(AppContext);
 
   function handleClick(id) {
 
-    if(document.querySelector('.item'+id).classList.contains('active')) {
-      document.querySelector('.item'+id).classList.remove('active')
-      
-      setIdPai('');
+    const checkPai = document.querySelector('.item' + id)
+    var checkChildrens = document.querySelectorAll('.item' + id + ' .list-children input[type="checkbox"]')
+    var itensChildrens = document.querySelectorAll('.item' + id + ' .list-children li')
+
+    if (checkPai.classList.contains('active')) {
+        checkPai.classList.remove('active')
+   
+      for (let item of itensChildrens) {
+        item.classList.remove('active')
+      }
+
+      for (let children of checkChildrens) {
+        children.checked = false;
+      }
 
     } else {
-      document.querySelector('.item'+id).classList.add('active')
-      var pai = data.find(item => item.id === id);
-      var list = Object.keys(pai.children).map(key => pai.children[key]);
-  
-      setListChildren(list);
-      setIdPai(id)
+      checkPai.classList.add('active')
+
+      for (let item of itensChildrens) {
+        item.classList.add('active')
+      }
+
+      for (let children of checkChildrens) {
+        children.checked = true;
+      }
 
     }
-
+    
   }
 
-  return(
+  return (
     <div className="container">
       {data.length ?
-        <ul 
+        <ul
           className="lista-principal"
         >
           {
             data.map(item => {
-              return(
+
+              let lista = item.children
+              let childrens = Object.keys(lista).map(key => lista[key]);
+
+              return (
                 <li
-                  className={'children item'+ item.id}
+                  className={'children item' + item.id}
                   key={item.id}
                 >
                   <div>
@@ -47,22 +61,64 @@ export default function Tree() {
                       type="checkbox"
                       id={item.id}
                       name={item.id}
-                      onClick={() => handleClick(item.id)}
+                      onChange={() => handleClick(item.id)}
                     />
-                    <label for={item.id}>
+                    <label htmlFor={item.id}>
                       {item.name}
                     </label>
                   </div>
                   <ul className="list-children">
-                    {idPai === item.id ? 
-                      <Children />
-                      :
+                    {childrens.map(children => {
+                      let lista = children.children
+                      let childrens = Object.keys(lista).map(key => lista[key]);
+                      return (
+                        <li
+                          className={'children item' + children.id}
+                          key={children.id}
+                        >
+                          <div>
+                            <input
+                              type="checkbox"
+                              id={children.id}
+                              name={children.id}
+                              onChange={() => handleClick(children.id)}
+                            />
+                            <label htmlFor={children.id}>
+                              {children.name}
+                            </label>
+                          </div>
+                          <ul className="list-children">
+                            {childrens.map(children => {
+                              return (
+                                <li
+                                  className={'children item' + children.id}
+                                  key={children.id}
+                                >
+                                  <div>
+                                    <input
+                                      type="checkbox"
+                                      id={children.id}
+                                      name={children.id}
+                                      onChange={() => handleClick(children.id)}
+                                    />
+                                    <label htmlFor={children.id}>
+                                      {children.name}
+                                    </label>
+                                  </div>
+                                </li>
 
-                      ''
+                              )
+                            })
+                            }
+                          </ul>
+                        </li>
+
+                      )
+                    })
                     }
                   </ul>
                 </li>
-                
+
               )
             })
           }
