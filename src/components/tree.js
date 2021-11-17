@@ -6,31 +6,25 @@ export default function Tree() {
   const {
     data,
     setListChildren,
-    setIdPai
+    setIdPai,
+    idPai
   } = useContext(AppContext);
-
-  console.log(data);
 
   function handleClick(id) {
 
     if(document.querySelector('.item'+id).classList.contains('active')) {
       document.querySelector('.item'+id).classList.remove('active')
-
-      document.querySelector('.item'+id+' .list-children').innerHTML = ''
+      
+      setIdPai('');
 
     } else {
       document.querySelector('.item'+id).classList.add('active')
-      var pai = data.find(item => item.id == id);
+      var pai = data.find(item => item.id === id);
       var list = Object.keys(pai.children).map(key => pai.children[key]);
   
-      var content = list.map(children => {
-        return (
-          '<li class="children item'+ children.id +'" >' +
-            children.name +
-          '</li>'
-        )
-      })
-      document.querySelector('.item'+id+' .list-children').innerHTML = content;
+      setListChildren(list);
+      setIdPai(id)
+
     }
 
   }
@@ -48,12 +42,25 @@ export default function Tree() {
                   className={'children item'+ item.id}
                   key={item.id}
                 >
-                  <div
-                    onClick={() => handleClick(item.id)}
-                  >
-                    {item.name}
+                  <div>
+                    <input
+                      type="checkbox"
+                      id={item.id}
+                      name={item.id}
+                      onClick={() => handleClick(item.id)}
+                    />
+                    <label for={item.id}>
+                      {item.name}
+                    </label>
                   </div>
-                  <ul className="list-children"></ul>
+                  <ul className="list-children">
+                    {idPai === item.id ? 
+                      <Children />
+                      :
+
+                      ''
+                    }
+                  </ul>
                 </li>
                 
               )
